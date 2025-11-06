@@ -86,6 +86,7 @@
     .navbar {
       background: #2c2c2c;
       padding: 0;
+      position: relative;
     }
     
     .nav-content {
@@ -106,6 +107,7 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      white-space: nowrap;
     }
     
     .nav-item:hover {
@@ -116,6 +118,29 @@
       content: '▼';
       font-size: 10px;
       opacity: 0.7;
+    }
+    
+    /* Menú hamburguesa para móvil */
+    .menu-toggle {
+      display: none;
+      background: #2c2c2c;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      padding: 15px 20px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .menu-toggle::before {
+      content: '☰ Menú';
+      margin-right: 10px;
+    }
+    
+    .menu-toggle.active::before {
+      content: '✕ Cerrar';
     }
     
     /* Contenedor principal */
@@ -212,28 +237,185 @@
       opacity: 0.1;
     }
     
+    /* Media queries para tablets */
+    @media (max-width: 1024px) {
+      .dashboard-container {
+        height: 75vh;
+        min-height: 700px;
+      }
+      
+      .main-container {
+        padding: 20px 15px;
+      }
+    }
+    
+    /* Media queries para móviles */
     @media (max-width: 768px) {
+      .header {
+        padding: 15px 0;
+      }
+      
       .header-content {
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
+        padding: 0 15px;
+      }
+      
+      .logo-dif-text {
+        font-size: 28px;
+      }
+      
+      .logo-dif-subtitle {
+        font-size: 12px;
+      }
+      
+      .logo-gobierno {
+        text-align: center;
+      }
+      
+      .logo-gobierno-text {
+        font-size: 11px;
+      }
+      
+      /* Menú hamburguesa activo en móvil */
+      .menu-toggle {
+        display: block;
       }
       
       .nav-content {
-        flex-wrap: wrap;
+        display: none;
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .nav-content.active {
+        display: flex;
       }
       
       .nav-item {
-        font-size: 12px;
-        padding: 12px 15px;
+        font-size: 14px;
+        padding: 15px 20px;
+        border-bottom: 1px solid #3c3c3c;
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .nav-item:last-child {
+        border-bottom: none;
+      }
+      
+      .main-container {
+        padding: 15px 10px;
+        min-height: auto;
+      }
+      
+      .page-title {
+        margin-bottom: 20px;
+      }
+      
+      .page-title h1 {
+        font-size: 22px;
+        line-height: 1.3;
+        padding: 0 10px;
+      }
+      
+      .page-title p {
+        font-size: 14px;
+        padding: 0 10px;
+      }
+      
+      .dashboard-wrapper {
+        border-radius: 4px;
+        min-height: 500px;
       }
       
       .dashboard-container {
         height: 70vh;
-        min-height: 600px;
+        min-height: 500px;
+        max-height: 600px;
+      }
+      
+      .loading {
+        font-size: 16px;
+        padding: 15px 30px;
+      }
+      
+      .footer {
+        padding: 15px;
+        margin-top: 20px;
+      }
+      
+      .footer p {
+        font-size: 12px;
+      }
+    }
+    
+    /* Media queries para móviles pequeños */
+    @media (max-width: 480px) {
+      .header {
+        padding: 12px 0;
+      }
+      
+      .header-content {
+        padding: 0 10px;
+      }
+      
+      .logo-dif-text {
+        font-size: 24px;
+      }
+      
+      .logo-dif-subtitle {
+        font-size: 11px;
+      }
+      
+      .logo-gobierno-text {
+        font-size: 10px;
+      }
+      
+      .main-container {
+        padding: 10px 5px;
       }
       
       .page-title h1 {
-        font-size: 24px;
+        font-size: 18px;
+      }
+      
+      .page-title p {
+        font-size: 13px;
+      }
+      
+      .dashboard-wrapper {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        min-height: 400px;
+      }
+      
+      .dashboard-container {
+        height: 65vh;
+        min-height: 400px;
+        max-height: 500px;
+      }
+      
+      .nav-item {
+        font-size: 13px;
+        padding: 12px 15px;
+      }
+    }
+    
+    /* Orientación landscape en móviles */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .dashboard-container {
+        height: 80vh;
+        min-height: 500px;
+      }
+      
+      .header {
+        padding: 10px 0;
+      }
+      
+      .main-container {
+        padding: 10px;
       }
     }
   </style>
@@ -258,7 +440,8 @@
   
   <!-- Barra de navegación -->
   <nav class="navbar">
-    <div class="nav-content">
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"></button>
+    <div class="nav-content" id="navContent">
       <a href="#" class="nav-item">Quiénes somos</a>
       <a href="#" class="nav-item">Programas sociales</a>
       <a href="#" class="nav-item">PPNNA</a>
@@ -293,5 +476,65 @@
   <footer class="footer">
     <p>&copy; 2025 DIF Jalisco - Gobierno del Estado de Jalisco</p>
   </footer>
+  
+  <script>
+    // Menú hamburguesa para móvil
+    const menuToggle = document.getElementById('menuToggle');
+    const navContent = document.getElementById('navContent');
+    
+    if (menuToggle && navContent) {
+      menuToggle.addEventListener('click', function() {
+        navContent.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+      });
+      
+      // Cerrar menú al hacer clic en un enlace
+      const navItems = navContent.querySelectorAll('.nav-item');
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          navContent.classList.remove('active');
+          menuToggle.classList.remove('active');
+        });
+      });
+      
+      // Cerrar menú al hacer clic fuera
+      document.addEventListener('click', function(event) {
+        if (!navContent.contains(event.target) && !menuToggle.contains(event.target)) {
+          navContent.classList.remove('active');
+          menuToggle.classList.remove('active');
+        }
+      });
+    }
+    
+    // Mejorar el comportamiento del iframe en móviles
+    const iframe = document.querySelector('iframe');
+    if (iframe) {
+      // Asegurar que el iframe sea responsive
+      iframe.setAttribute('scrolling', 'yes');
+      
+      // Ajustar altura en móviles después de cargar
+      window.addEventListener('resize', function() {
+        if (window.innerWidth <= 768) {
+          const container = document.querySelector('.dashboard-container');
+          if (container) {
+            const viewportHeight = window.innerHeight;
+            const headerHeight = document.querySelector('.header').offsetHeight;
+            const navHeight = document.querySelector('.navbar').offsetHeight;
+            const titleHeight = document.querySelector('.page-title').offsetHeight;
+            const footerHeight = document.querySelector('.footer').offsetHeight;
+            const padding = 40;
+            
+            const availableHeight = viewportHeight - headerHeight - navHeight - titleHeight - footerHeight - padding;
+            container.style.height = Math.max(400, availableHeight) + 'px';
+          }
+        }
+      });
+      
+      // Ejecutar ajuste inicial
+      setTimeout(function() {
+        window.dispatchEvent(new Event('resize'));
+      }, 500);
+    }
+  </script>
 </body>
 </html>
